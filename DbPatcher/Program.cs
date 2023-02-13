@@ -93,11 +93,20 @@ namespace DbPatcher
 
             using (FileStream fileStream = File.Create(resDir + "PatchedShaderDb.res")) //write the new shaderdb
             {
+                // Get the size of the modifed permutation entry to write it later.
+                byte[] modifiedEntrySize = BitConverter.GetBytes(modifiedEntry.Length);
+
+                // Write a new shaderdb.res file with all of the necessary data.
                 fileStream.Write(beforeEntry);
-                byte[] sizeBuff = BitConverter.GetBytes(modifiedEntry.Length);
-                fileStream.Write(sizeBuff);
+                fileStream.Write(modifiedEntrySize);
                 fileStream.Write(modifiedEntry);
                 fileStream.Write(afterEntry);
+
+                // Calculate the size of the new file length and write it to the shaderdb.
+                uint size = (uint)fileStream.Length - 0x1C;
+                byte[] newDbSize = BitConverter.GetBytes(size);
+                fileStream.Position = 0x18;
+                fileStream.Write(newDbSize);
             }
         }
 
