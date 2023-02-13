@@ -54,11 +54,10 @@ namespace DbPatcher
                 Console.WriteLine("Press <Enter> to exit... ");
                 while (Console.ReadKey().Key != ConsoleKey.Enter) { }
                 return;
-            } 
+            }
             #endregion
 
-            int index = args[2].LastIndexOf("\\");
-            string resDir = resPath.Substring(0, index);
+            string resDir = Path.GetDirectoryName(resPath);
 
             byte[] permutationBuffer = new byte[20];
             int entryPos;
@@ -103,9 +102,9 @@ namespace DbPatcher
                 fileStream.Write(afterEntry);
 
                 // Calculate the size of the new file length and write it to the shaderdb.
-                uint size = (uint)fileStream.Length - 0x1C;
+                uint size = (uint)fileStream.Length - 28;
                 byte[] newDbSize = BitConverter.GetBytes(size);
-                fileStream.Position = 0x18;
+                fileStream.Position = 24;
                 fileStream.Write(newDbSize);
             }
         }
